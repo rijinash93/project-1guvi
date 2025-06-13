@@ -3,9 +3,9 @@ import pandas as pd
 import datetime
 from sqlalchemy import create_engine, text
 
-# Streamlit App Config
+
 st.set_page_config(page_title="Police Log Prediction", page_icon="🚔")
-# Set custom background color (light blue as example)
+
 st.markdown("""
     <style>
         .stApp {
@@ -14,11 +14,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# DB Connection
+
 db_url = "postgresql+pg8000://rijina3030:sOg4cFE5Nguj0kiXk0h86gQjVNPcbJy4@dpg-d0krorbe5dus73c1qhsg-a.singapore-postgres.render.com/project1"
 engine = create_engine(db_url)
 
-# Load data
+
 @st.cache_data
 def load_data():
     query = "SELECT * FROM traffic_stops"
@@ -26,18 +26,16 @@ def load_data():
 
 df = load_data()
 
-# Title with styled heading
+
 st.markdown("<h2 style='color: navy;'>🚔 Add New Police Log & Predict Outcome and Violation</h2>", unsafe_allow_html=True)
 
    
 
-
-# Form
 with st.form("my_form"):
    
     stop_date = st.date_input("Stop Date", value=datetime.date(2020, 1, 1))
 
-# Display it in DD-MM-YYYY format
+
     formatted_date = stop_date.strftime("%d/%m/%Y")
     st.write("Selected Stop Date:", formatted_date)
     
@@ -46,13 +44,6 @@ with st.form("my_form"):
     driver_race = st.text_input("Driver Race")
     
   
-
-
-
-
-
-
-# Create time options as strings (e.g., "00:00:00" to "25:00:00")
     time_options = [
     f"{h}:{m:02}:00"
     for h in range(0, 26)
@@ -60,19 +51,9 @@ with st.form("my_form"):
     if not (h == 25 and m > 0)  # Only include 25:00:00, not 25:02:00, etc.
      ]
 
-# Dropdown that behaves like a text box (searchable)
+
     stop_time = st.selectbox("⏱️ Select Stop Time ", time_options)
 
-# Output selected time
-    
-
-
-# Display the formatted time
-    
-
-
-
-# Define readable time ranges
     duration_options = [
       "0-15 Min",
       "16-30 Min",
@@ -81,14 +62,8 @@ with st.form("my_form"):
       "More than 1 Hour"
       ]
 
-# Dropdown menu
- 
 
-# Display selection
     stop_duration = st.selectbox("Stop Duration", duration_options)
-
-   
-
     search_conducted = st.text_input("Was Search Conducted")
     search_type = st.text_input("Search Type")
     drugs_related_stop = st.text_input("Was it Drug Related")
@@ -101,12 +76,12 @@ with st.form("my_form"):
 from sqlalchemy import text
 
 if submit_button:
-    # Validate required fields
+    
     required_fields = [vehicle_number]
     if any(field.strip() == "" for field in required_fields):
         st.error("🚫 Please fill in all required fields before submitting.")
     else:
-        # Prepare the values dictionary
+    
         values = {
             'driver_race': driver_race,
             'search_conducted': search_conducted,
@@ -121,7 +96,7 @@ if submit_button:
             'stop_duration': stop_duration
         }
 
-        # 🟢 Define both queries up front
+        
         select_query = text("""
             SELECT stop_outcome, violation
             FROM traffic_stops
@@ -165,13 +140,6 @@ if submit_button:
                     st.info(f"📋 Violation: {violation}")
         except Exception as e:
             st.error(f"❌ Error while accessing the database:\n{e}")
-
-import streamlit as st
-import pandas as pd
-from sqlalchemy import create_engine
-
-# DB connection
-engine = create_engine("postgresql+pg8000://rijina3030:sOg4cFE5Nguj0kiXk0h86gQjVNPcbJy4@dpg-d0krorbe5dus73c1qhsg-a.singapore-postgres.render.com/project1")
 
 # Dictionary of queries
 medium_level_queries = {
@@ -283,7 +251,7 @@ medium_level_queries = {
             AND COUNT(*) FILTER (WHERE stop_outcome = 'Arrest') = 0;
     """,
 
-    "🌍 Location-Based: Countries with most drug stops": """
+    " Location-Based: Countries with most drug stops": """
         SELECT country_name, COUNT(*) AS drug_stops
         FROM traffic_stops
         WHERE drugs_related_stop = 'true'
@@ -291,7 +259,7 @@ medium_level_queries = {
         ORDER BY drug_stops DESC;
     """,
 
-    "🌍 Location-Based: Arrest rate by country and violation": """
+    " Location-Based: Arrest rate by country and violation": """
         SELECT country_name, violation,
                COUNT(*) FILTER (WHERE stop_outcome = 'Arrest') * 100.0 / COUNT(*) AS arrest_rate
         FROM traffic_stops
@@ -299,7 +267,7 @@ medium_level_queries = {
         ORDER BY arrest_rate DESC;
     """,
 
-    "🌍 Location-Based: Country with most searches": """
+    "Location-Based: Country with most searches": """
         SELECT country_name, COUNT(*) AS search_count
         FROM traffic_stops
         WHERE search_conducted = 'true'
@@ -309,7 +277,6 @@ medium_level_queries = {
 }
 
 
-# UI: Medium-level dropdown
 st.subheader("📊 Medium-Level Queries")
 
 query_choice = st.selectbox(
@@ -317,7 +284,6 @@ query_choice = st.selectbox(
     ["Select..."] + list(medium_level_queries.keys())
 )
 
-# Execute the query
 if query_choice != "Select...":
     if st.button("Run Query"):
         query = medium_level_queries[query_choice]
@@ -328,7 +294,6 @@ if query_choice != "Select...":
             st.error(f"❌ Error executing query:\n{e}")
 
 
-# --- Dropdown for Query Selection ---
 query_options = {
     "Yearly Breakdown of Stops and Arrests by Country": """
         SELECT 
@@ -411,7 +376,7 @@ ORDER BY hour;
     """
 }
 
-# --- User Selection ---
+
 st.subheader("📊 complex-Level Queries")
 
 query_choice = st.selectbox(
@@ -419,7 +384,7 @@ query_choice = st.selectbox(
     ["Select..."] + list(query_options.keys())
 )
 
-# Execute the query
+
 if query_choice != "Select...":
     if st.button("Run Query",key=query_options[query_choice]):
         query = query_options[query_choice]
