@@ -395,15 +395,6 @@ if query_choice != "Select...":
             st.error(f"❌ Error executing query:\n{e}")
 
 
-# Streamlit UI
-import streamlit as st
-import pandas as pd
-from sqlalchemy import create_engine, text
-
-# Streamlit page config
-
-
-# Title with style
 st.markdown("<h2 style='color: navy;'>🚦 Traffic Stop Records by Country</h2>", unsafe_allow_html=True)
 
 
